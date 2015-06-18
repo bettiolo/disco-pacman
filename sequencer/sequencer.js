@@ -10,24 +10,17 @@ function Sequencer() {
 }
 
 Sequencer.prototype.start = function () {
-  this.addTrack('samples/Clubhouse Kick 01.wav', this.getRandomBeats());
-  this.addTrack('samples/LS-TCD1 Clubby Snare 008.wav', this.getRandomBeats());
-  this.addTrack('samples/LS-TCD1 Resonance Clap 16.wav', this.getRandomBeats());
-  this.addTrack('samples/LS-TCD1 Short Crash 01.wav', this.getRandomBeats());
-  this.addTrack('samples/LS-MH1 Laser Sweep 10.wav', this.getRandomBeats());
-  this.addTrack('samples/LS-MH1 Subbase 34.wav', this.getRandomBeats());
+  this.addTrack('samples/Clubhouse Kick 01.wav');
+  this.addTrack('samples/LS-TCD1 Clubby Snare 008.wav');
+  this.addTrack('samples/LS-TCD1 Resonance Clap 16.wav');
+  this.addTrack('samples/LS-TCD1 Short Crash 01.wav');
+  this.addTrack('samples/LS-MH1 Laser Sweep 10.wav');
+  this.addTrack('samples/LS-MH1 Subbase 34.wav');
+  this.randomizeBeats();
   this.generateTable();
 };
 
-Sequencer.prototype.getRandomBeats = function () {
-  var beatsEnabled = [];
-  for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
-    beatsEnabled.push(Math.random() < 0.5);
-  }
-  return beatsEnabled;
-};
-
-Sequencer.prototype.addTrack = function (url, beatsEnabled) {
+Sequencer.prototype.addTrack = function (url) {
   var track = { beats: [] };
   for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
     var audio = new Audio();
@@ -38,16 +31,38 @@ Sequencer.prototype.addTrack = function (url, beatsEnabled) {
 
     track.beats.push({
       audio: audio,
-      source: source,
-      enabled: beatsEnabled[beatIndex]
+      source: source
     });
   }
   this._tracks.push(track);
 };
 
+Sequencer.prototype.getRandomBeats = function () {
+  var beatsEnabled = [];
+  for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
+    beatsEnabled.push(Math.random() < 0.5);
+  }
+  return beatsEnabled;
+};
+
+Sequencer.prototype.setBeatsEnabled = function(trackIndex, beatsEnabled) {
+  var track = this._tracks[trackIndex];
+  for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
+    track.beats[beatIndex].enabled = beatsEnabled[beatIndex];
+  }
+};
+
+Sequencer.prototype.randomizeBeats = function () {
+  for (var trackIndex = 0; trackIndex < trackCount; trackIndex++) {
+    this.setBeatsEnabled(trackIndex, this.getRandomBeats());
+  }
+};
+
 Sequencer.prototype.beat = function () {
   if (this._beatIndex == beatCount) {
     this._beatIndex = 0;
+    this.randomizeBeats();
+    this.generateTable();
   }
   console.log('beat', this._beatIndex);
 
@@ -80,6 +95,7 @@ Sequencer.prototype.setBpm = function (bpm) {
 
 Sequencer.prototype.generateTable = function() {
   var sequencerTable = document.getElementById('sequencerTable');
+  sequencerTable.innerHTML = '';
   var alternateTrack = true;
   for (var trackIndex = 0; trackIndex < trackCount; trackIndex++ ){
     var tr = document.createElement('tr');
