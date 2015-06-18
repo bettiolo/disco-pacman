@@ -1,0 +1,24 @@
+    * {
+      box-sizing: border-box;
+    }
+
+    tr.alternate-track {
+      background-color: #f0f0f0;
+    }
+
+    td.beat {
+      width: 30px;
+      text-align: center;
+    }
+
+    tr.regular-track td.alternate-beat-group {
+      background-color: #e0e0e0;
+    }
+
+    tr.alternate-track td.alternate-beat-group {
+      background-color: #d0d0d0;
+    }
+
+    td.beat-highlight {
+      background-color: yellow !important;
+    }
