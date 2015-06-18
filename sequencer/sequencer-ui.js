@@ -106,10 +106,11 @@ function getRandomInt(min, max) {
 }
 
 SequencerUi.prototype.init = function () {
+  this._sequencer.init(this.onBeat.bind(this));
+
   var defaultBpm = 130;
   this._bpmInput.value = defaultBpm;
   this._sequencer.setBpm(defaultBpm);
-  this._sequencer.start(this.onBeat.bind(this));
 };
 
 SequencerUi.prototype.generateTable = function () {

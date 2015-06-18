@@ -9,12 +9,27 @@ function Sequencer(samples) {
   this._beatIndex = 0;
 }
 
-Sequencer.prototype.start = function (onBeat) {
+Sequencer.prototype.init = function (onBeat) {
   this._onBeat = onBeat;
   for (var sampleIndex = 0; sampleIndex < this._samples.length; sampleIndex++) {
     this.addTrack(this._samples[sampleIndex]);
   }
   this.randomizeBeats();
+};
+
+Sequencer.prototype.getFile = function(url, cb) {
+  var request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.responseType = "arraybuffer";
+
+  request.onload = function() {
+    this._context.decodeAudioData(request.response, function(data) {
+      cb(data, undefined);
+    }, function() {
+      cb(undefined, "Error decoding the file " + url);
+    });
+  };
+  request.send();
 };
 
 Sequencer.prototype.addTrack = function (url) {
@@ -86,4 +101,3 @@ Sequencer.prototype.setBpm = function (bpm) {
 Sequencer.prototype.getTrackTitle = function(trackIndex) {
   return decodeURIComponent(this._tracks[trackIndex].beats[0].audio.src.split('/').slice(-1)[0]);
 };
-
