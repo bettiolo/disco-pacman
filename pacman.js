@@ -293,6 +293,9 @@ Pacman.User = function (game, map) {
 
     function addScore(nScore) { 
         score += nScore;
+        var options = {'detail': nScore};
+        var newEvent = new CustomEvent("scored", options);
+        document.dispatchEvent(newEvent);
         if (score >= 10000 && score - nScore < 10000) { 
             lives += 1;
         }
@@ -1007,6 +1010,12 @@ var PACMAN = (function () {
         audio.play("eatpill");
         timerStart = tick;
         eatenCount = 0;
+
+        // Create the event
+        var options = { 'detail': 'a pill was eaten!' }
+        var event = new CustomEvent("pillEaten", options);
+        document.dispatchEvent(event);
+
         for (i = 0; i < ghosts.length; i += 1) {
             ghosts[i].makeEatable(ctx);
         }        
