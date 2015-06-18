@@ -4,62 +4,14 @@
     </head>
     <body>
         <script src='buzz.min.js'></script>
-        <script type="text/javascript">
-            sounds = {}
-            sounds['sound1'] = new Audio('audio/bass1.wav');
-            sounds['sound2'] = new Audio('audio/bass2.wav');
-            sounds.sound1.mediaGroup = 'soundGroup';
-            sounds.sound2.mediaGroup = 'soundGroup';
-
-            function playSounds(){
-                sounds.sound1.play();
-            }
-
-function loopSounds(){
-
-    if (typeof sounds.sound1.loop == 'boolean')
-    {
-        sounds.sound1.loop = true;
-    }
-    else
-    {
-        sounds.sound1.addEventListener('ended', function() {
-                this.currentTime = 0;
-                this.play();
-                }, false);
-    }
-    sounds.sound1.play();
-}
-function initBuzz(){
- new buzz.group([
-        new buzz.sound("audio/bass1.wav", {loop: true}),
-        new buzz.sound("audio/drums1.wav")
-        ]);
-}
-
-function playBuzz(num){
-    if(num != null){
-        buzz.sounds[num].play();
-    } else {
-        buzz.all().play();
-    }
-}
-function addAndPlayBuzz(){
-    buzz.group(); // calling group seems to create the add and remove function
-    buzz.add(new buzz.sound("audio/drums2.wav"));
-    playBuzz();
-}
-function stopAll(){
-    buzz.all().stop();
-}
-initBuzz();
-</script>
+        <script src='mybuzz.js'></script>
 <div>
     <a href="javascript: playSounds();">Play all</a>
     <a href="javascript: loopSounds();">loop all</a>
     <a href="javascript: playBuzz(1);">play buzz one</a>
     <a href="javascript: playBuzz();">play all buzz</a>
-    <a href="javascript: addAndPlayBuzz();">add and play buzz</a>
+    <a href="javascript: addBuzz();">add buzz</a>
+    <a href="javascript: removeLastBuzz();">remove buzz</a>
     <a href="javascript: stopAll();">stop all</a>
 
 </div>

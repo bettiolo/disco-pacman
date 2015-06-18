@@ -53,6 +53,13 @@
       el.innerHTML = "Sorry, needs a decent browser<br /><small>" + 
         "(firefox 3.6+, Chrome 4+, Opera 10+ and Safari 4+)</small>";
     }
+
+    document.addEventListener("pillEaten", function(e) {
+          console.log(e.detail); 
+      });
+    document.addEventListener("scored", function(e) {
+          console.log('something eaten for ' + e.detail + ' points!'); 
+      });
   </script>
 
 </body>
