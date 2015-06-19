@@ -825,10 +825,18 @@ var PACMAN = (function () {
         timerStart = tick;
         setState(COUNTDOWN);
     }    
+    function setLevel(num){
+        level = num;
+        options = {'details': num};
+        var event = new CustomEvent("newLevel", options);
+        document.dispatchEvent(event);
+
+
+    }
 
     function startNewGame() {
         setState(WAITING);
-        level = 1;
+        setLevel(1);
         user.reset();
         map.reset();
         map.draw(ctx);
@@ -947,10 +955,22 @@ var PACMAN = (function () {
                     user.addScore(nScore);                    
                     setState(EATEN_PAUSE);
                     timerStart = tick;
+                    // add track or music
+                    // eaten ghost event
+                    var options = { 'detail': 'ate ghost!' };
+                    var event = new CustomEvent("ateGhost", options);
+                    document.dispatchEvent(event);
+
                 } else if (ghosts[i].isDangerous()) {
                     audio.play("die");
                     setState(DYING);
                     timerStart = tick;
+
+                    // death event
+                    var options = { 'detail': 'died!' }
+                    var event = new CustomEvent("died", options);
+                    document.dispatchEvent(event);
+
                 }
             }
         }                             
@@ -1015,6 +1035,7 @@ var PACMAN = (function () {
         var options = { 'detail': 'a pill was eaten!' }
         var event = new CustomEvent("pillEaten", options);
         document.dispatchEvent(event);
+        // start music
 
         for (i = 0; i < ghosts.length; i += 1) {
             ghosts[i].makeEatable(ctx);
@@ -1023,7 +1044,7 @@ var PACMAN = (function () {
     
     function completedLevel() {
         setState(WAITING);
-        level += 1;
+        setLevel(level + 1);
         map.reset();
         user.newLevel();
         startLevel();

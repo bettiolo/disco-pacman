@@ -1,7 +1,9 @@
-window.addEventListener('load', function () {
+/*
+  window.addEventListener('load', function () {
   var sequencerUi = new SequencerUi();
   sequencerUi.init();
 });
+*/
 
 function SequencerUi() {
   var allSamples = [
@@ -90,7 +92,7 @@ function SequencerUi() {
     'LS-TCD1 Warm Kick 15.wav'
   ];
   allSamples.sort( function() { return 0.5 - Math.random() } ); // randomize
-  var samples = allSamples.slice(1, getRandomInt(5, 10)).map(function (sample) {
+  var samples = allSamples.slice(1, getRandomInt(10, 15)).map(function (sample) {
     return '/sequencer/samples/' + sample;
   });
 
@@ -106,10 +108,11 @@ function getRandomInt(min, max) {
 }
 
 SequencerUi.prototype.init = function () {
+  this._sequencer.init(this.onBeat.bind(this));
+
   var defaultBpm = 130;
   this._bpmInput.value = defaultBpm;
   this._sequencer.setBpm(defaultBpm);
-  this._sequencer.start(this.onBeat.bind(this));
 };
 
 SequencerUi.prototype.generateTable = function () {
@@ -129,7 +132,17 @@ SequencerUi.prototype.generateTable = function () {
     var alternateBeatGroup = false;
 
     var infoTd = document.createElement('td');
-    infoTd.innerText = this._sequencer.getTrackTitle(trackIndex);
+    var trackCheckbox = document.createElement('input');
+    trackCheckbox.setAttribute('type', 'checkbox');
+    trackCheckbox.id = 'track-enabled-' + trackIndex;
+    trackCheckbox.checked = true;
+    trackCheckbox.setAttribute('data-track', trackIndex);
+    // trackCheckbox.addEventListener('input', this.changeTrackState());
+    var trackCheckboxLabel = document.createElement('label');
+    trackCheckboxLabel.setAttribute('for', trackCheckbox.id);
+    trackCheckboxLabel.innerHTML = this._sequencer._tracks[trackIndex].title;
+    infoTd.appendChild(trackCheckbox);
+    infoTd.appendChild(trackCheckboxLabel);
     infoTd.classList.add('track-info');
     tr.appendChild(infoTd);
 
@@ -178,7 +191,7 @@ SequencerUi.prototype.toArray = function (obj) {
 
 SequencerUi.prototype.onBeat = function (beatIndex) {
   if (beatIndex == 0) {
-//    this.generateTable();
+    //this.generateTable();
   }
- // this.higlightBeat(beatIndex);
+  //this.higlightBeat(beatIndex);
 };

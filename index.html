@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>HTML5 Pacman</title>
+    <title>Disco Pacman!</title>
     
     <style type="text/css">
       @font-face {
@@ -32,11 +32,9 @@
   
   <div id="shim">shim for font face</div>
 
-  <h1>HTML5 Pacman</h1>
+  <h1>Disco Pacman!</h1>
 
-  <input id="bpm" type="text"></input>
-  <a href="http://arandomurl.com/">Writeup</a> |
-  Code on <a href="http://arandomurl.com/">Github</a>
+  Set BPM: <input id="bpm" type="text"></input>
 
   <div id="pacman"></div>
   <script src="pacman.js"></script>
@@ -60,10 +58,49 @@
       });
     document.addEventListener("scored", function(e) {
           console.log('something eaten for ' + e.detail + ' points!'); 
+          if(e.detail == 10){
+              //eating normal dot
+              var newBpm = Number(document.getElementById('bpm').value) + 1;
+              setBpm(newBpm);
+          }
+          if(e.detail >= 50){
+              //eating big dot or ghost
+            colors = ['yellow','pink','blue','purple','green','black','orange',"white"];
+            var i = getRandomInt(0,6);
+             rainbow(colors[i]);
+        }
       });
+      function rainbow(color){
+                document.body.style.backgroundColor = color;
+                console.log("changed color");
+      }
+      document.addEventListener("newLevel", function(e) {
+          console.log("new level! " + e.detail);
+      });
+      document.addEventListener("ateGhost", function(e) {
+          console.log("ate ghost! " + e.detail);
+          //add sample
+          var samples = window.sequencerUi._sequencer._samples;
+          var i = getRandomInt(0,samples.length);
+          var sample = samples[i];
+          window.sequencerUi._sequencer.addTrack(sample);
+      });
+      document.addEventListener('died', function(e){
+          setBpm(130);
+        rainbow('white');
+        // reset music?
+      });
+      function setBpm(num){
+        window.sequencerUi._sequencer.setBpm(num);
+        document.getElementById('bpm').value = num;
+      }
   </script>
 
   <script src="sequencer/sequencer.js"></script>
   <script src="sequencer/pacman_sequencer.js"></script>
+  <script type='text/javascript'>
+      window.sequencerUi = new SequencerUi();
+      window.sequencerUi.init();
+ </script>
 </body>
 </html>
