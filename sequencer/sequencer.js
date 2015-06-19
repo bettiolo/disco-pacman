@@ -15,6 +15,7 @@ Sequencer.prototype.init = function (onBeat) {
     this.addTrack(this._samples[sampleIndex]);
   }
   this.randomizeBeats();
+  this.scheduleNextBeat();
 };
 
 Sequencer.prototype.getFile = function(url, cb) {
@@ -57,14 +58,6 @@ Sequencer.prototype.addTrack = function (url) {
   });
 };
 
-Sequencer.prototype.scheduleBeat = function (trackIndex, delayInSeconds) {
-  var source = this._context.createBufferSource();
-  source.buffer = this._tracks[trackIndex].audioData;
-  // source.loop = true;
-  source.connect(this._gain);
-  source.start(this._context.currentTime + delayInSeconds);
-};
-
 Sequencer.prototype.getRandomBeats = function () {
   var beatsEnabled = [];
   for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
@@ -96,18 +89,31 @@ Sequencer.prototype.beat = function () {
   for (var trackIndex = 0; trackIndex < this._samples.length; trackIndex++) {
     var beat = this._tracks[trackIndex].beats[this._beatIndex];
     if (beat.enabled) {
-      this.scheduleBeat(trackIndex, 0);
+      var delayInSeconds = 0;
+      var source = this._context.createBufferSource();
+      source.buffer = this._tracks[trackIndex].audioData;
+      // source.loop = true;
+      source.connect(this._gain);
+      source.start(this._context.currentTime + delayInSeconds);
     }
   }
+  this.scheduleNextBeat();
   this._beatIndex++;
 };
 
-Sequencer.prototype.setBpm = function (bpm) {
-  var newInterval = (60 * 1000) / bpm;
-  if (this._interval != newInterval) {
-    console.log('bpm', bpm);
-    this._intervalMs = newInterval;
+Sequencer.prototype.scheduleNextBeat = function() {
+  if (!this._intervalMs || this._intervalMs != this._nextIntervalMs) {
+    console.log('bpm change:', this._bpm);
+    this._intervalMs = this._nextIntervalMs;
     clearInterval(this._interval);
     this._interval = setInterval(this.beat.bind(this), this._intervalMs);
   }
+};
+
+Sequencer.prototype.setBpm = function (bpm) {
+  if (bpm < 80) {
+    bpm = 80;
+  }
+  this._bpm = bpm;
+  this._nextIntervalMs = (60 * 1000) / bpm;
 };
