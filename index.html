@@ -85,12 +85,15 @@
                 addMoreTracks();
             });
             document.addEventListener('died', function(e){
+                window.original_bpm = Number(document.getElementById('bpm').value);
                 setBpm(0);
                 rainbow('white');
                 // reset music?
+                console.log("died");
                 setTimeout(function(){
-                    setBpm(130);
-                }, 8000);
+                    setBpm(window.original_bpm);
+                    window.sequencerUi._sequencer.scheduleNextBeat();
+                }, 6000);
             });
             document.addEventListener('startGame', function(e){
                 // start music?
