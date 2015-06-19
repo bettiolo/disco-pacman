@@ -44,7 +44,7 @@ Sequencer.prototype.addTrack = function (url) {
   var track = {
     title: title,
     beats: [],
-    enabled: true
+    enabled: false
   };
   for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
     track.beats.push({
@@ -99,7 +99,7 @@ Sequencer.prototype.beat = function () {
 };
 
 Sequencer.prototype.scheduleNextBeat = function() {
-  if (this._intervalMs === 0) {
+  if (this._bpm === 0) {
     console.log('bpm stop');
     clearInterval(this._interval);
     return;
@@ -110,11 +110,13 @@ Sequencer.prototype.scheduleNextBeat = function() {
     clearInterval(this._interval);
     this._interval = setInterval(this.beat.bind(this), this._intervalMs);
   }
+
 };
 
 Sequencer.prototype.setBpm = function (bpm) {
   if (bpm == 0) {
     this._nextIntervalMs = 0;
+    this._intervalMs = 0;
     this._bpm = bpm;
     return;
   }
@@ -128,6 +130,7 @@ Sequencer.prototype.setBpm = function (bpm) {
 
 Sequencer.prototype.changeTrackState = function(trackIndex, enabled) {
   this._tracks[trackIndex].enabled = enabled;
+  console.log('enabled' + this._tracks[trackIndex].title);
 };
 
 Sequencer.prototype.changeBeatState = function(trackIndex, beatIndex, enabled) {

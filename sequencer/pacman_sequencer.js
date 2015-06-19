@@ -92,7 +92,7 @@ function SequencerUi() {
     'LS-TCD1 Warm Kick 15.wav'
   ];
   allSamples.sort( function() { return 0.5 - Math.random() } ); // randomize
-  var samples = allSamples.slice(1, getRandomInt(10, 15)).map(function (sample) {
+  var samples = allSamples.slice(1, 15).map(function (sample) {
     return '/sequencer/samples/' + sample;
   });
 
@@ -107,8 +107,8 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-SequencerUi.prototype.init = function () {
-  this._sequencer.init(this.onBeat.bind(this));
+SequencerUi.prototype.init = function (onBeat) {
+  this._sequencer.init(onBeat);
 
   var defaultBpm = 130;
   this._bpmInput.value = defaultBpm;
@@ -189,9 +189,3 @@ SequencerUi.prototype.toArray = function (obj) {
   return array;
 };
 
-SequencerUi.prototype.onBeat = function (beatIndex) {
-  if (beatIndex == 0) {
-    //this.generateTable();
-  }
-  //this.higlightBeat(beatIndex);
-};

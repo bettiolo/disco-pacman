@@ -756,12 +756,22 @@ Pacman.Audio = function(game) {
         for (var i = 0; i < playing.length; i++) {
             files[playing[i]].pause();
         }
+
+        options = {'details': 'paused'};
+        var event = new CustomEvent("paused", options);
+        document.dispatchEvent(event);
+
     };
     
     function resume() { 
         for (var i = 0; i < playing.length; i++) {
             files[playing[i]].play();
         }        
+
+        options = {'details': 'resumed'};
+        var event = new CustomEvent("resumed", options);
+        document.dispatchEvent(event);
+
     };
     
     return {
@@ -831,7 +841,6 @@ var PACMAN = (function () {
         var event = new CustomEvent("newLevel", options);
         document.dispatchEvent(event);
 
-
     }
 
     function startNewGame() {
@@ -841,6 +850,13 @@ var PACMAN = (function () {
         map.reset();
         map.draw(ctx);
         startLevel();
+
+        options = {'details': 'start'};
+        var event = new CustomEvent("startGame", options);
+        setTimeout( function(){
+            document.dispatchEvent(event);
+        }, 4000);
+
     }
 
     function keyDown(e) {

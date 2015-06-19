@@ -1,106 +1,146 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Disco Pacman!</title>
-    
-    <style type="text/css">
-      @font-face {
-	    font-family: 'BDCartoonShoutRegular';
-        src: url('BD_Cartoon_Shout-webfont.ttf') format('truetype');
-	    font-weight: normal;
-	    font-style: normal;
-      }
-      #pacman {
-        height:450px;
-        width:342px;
-        margin:20px auto;
-      }
-      #shim { 
-        font-family: BDCartoonShoutRegular; 
-        position:absolute;
-        visibility:hidden
-      }
-      h1 { font-family: BDCartoonShoutRegular; text-align:center; }
-      body { width:342px; margin:0px auto; font-family:sans-serif; }
-      a { text-decoration:none; }
-    </style>
+    <head>
+        <meta charset="utf-8" />
+        <title>Disco Pacman!</title>
 
-</head>
+        <style type="text/css">
+            @font-face {
+                font-family: 'BDCartoonShoutRegular';
+                src: url('BD_Cartoon_Shout-webfont.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+            #pacman {
+                height:450px;
+                width:342px;
+                margin:20px auto;
+            }
+            #shim { 
+                font-family: BDCartoonShoutRegular; 
+                position:absolute;
+                visibility:hidden
+            }
+            h1 { font-family: BDCartoonShoutRegular; text-align:center; }
+            body { width:342px; margin:0px auto; font-family:sans-serif; }
+            a { text-decoration:none; }
+        </style>
+        <script src="sequencer/sequencer.js"></script>
+        <script src="sequencer/pacman_sequencer.js"></script>
 
-<body>
-  
-  <div id="shim">shim for font face</div>
+    </head>
 
-  <h1>Disco Pacman!</h1>
+    <body>
 
-  Set BPM: <input id="bpm" type="text"></input>
+        <div id="shim">shim for font face</div>
 
-  <div id="pacman"></div>
-  <script src="pacman.js"></script>
-  <script src="buzz.min.js"></script>
-  <script src="modernizr-1.5.min.js"></script>
+        <h1>Disco Pacman!</h1>
 
-  <script>
+        Set BPM: <input id="bpm" type="text"></input>
 
-    var el = document.getElementById("pacman");
+        <div id="pacman"></div>
+        <script src="pacman.js"></script>
+        <script src="buzz.min.js"></script>
+        <script src="modernizr-1.5.min.js"></script>
 
-    if (Modernizr.canvas && Modernizr.localstorage && 
-        Modernizr.audio && (Modernizr.audio.ogg || Modernizr.audio.mp3)) {
-      window.setTimeout(function () { PACMAN.init(el, "./"); }, 0);
-    } else { 
-      el.innerHTML = "Sorry, needs a decent browser<br /><small>" + 
-        "(firefox 3.6+, Chrome 4+, Opera 10+ and Safari 4+)</small>";
-    }
+        <script>
 
-    document.addEventListener("pillEaten", function(e) {
-          console.log(e.detail); 
-      });
-    document.addEventListener("scored", function(e) {
-          console.log('something eaten for ' + e.detail + ' points!'); 
-          if(e.detail == 10){
-              //eating normal dot
-              var newBpm = Number(document.getElementById('bpm').value) + 1;
-              setBpm(newBpm);
-          }
-          if(e.detail >= 50){
-              //eating big dot or ghost
-            colors = ['yellow','pink','blue','purple','green','black','orange',"white"];
-            var i = getRandomInt(0,6);
-             rainbow(colors[i]);
-        }
-      });
-      function rainbow(color){
+            var el = document.getElementById("pacman");
+
+            if (Modernizr.canvas && Modernizr.localstorage && 
+            Modernizr.audio && (Modernizr.audio.ogg || Modernizr.audio.mp3)) {
+                window.setTimeout(function () { PACMAN.init(el, "./"); }, 0);
+                } else { 
+                el.innerHTML = "Sorry, needs a decent browser<br /><small>" + 
+                    "(firefox 3.6+, Chrome 4+, Opera 10+ and Safari 4+)</small>";
+            }
+
+            document.addEventListener("pillEaten", function(e) {
+                console.log(e.detail); 
+            });
+            document.addEventListener("scored", function(e) {
+                console.log('something eaten for ' + e.detail + ' points!'); 
+                if(e.detail == 10){
+                    //eating normal dot
+                    var newBpm = Number(document.getElementById('bpm').value) + 1;
+                    setBpm(newBpm);
+                    //colors = ['yellow','pink','blue','purple','green','black','orange',"white"];
+                    //var i = getRandomInt(0,6);
+                    // rainbow(colors[i]);
+
+                }
+                if(e.detail >= 50){
+                    //eating big dot or ghost
+                }
+            });
+            function rainbow(color){
                 document.body.style.backgroundColor = color;
                 console.log("changed color");
-      }
-      document.addEventListener("newLevel", function(e) {
-          console.log("new level! " + e.detail);
-      });
-      document.addEventListener("ateGhost", function(e) {
-          console.log("ate ghost! " + e.detail);
-          //add sample
-          var samples = window.sequencerUi._sequencer._samples;
-          var i = getRandomInt(0,samples.length);
-          var sample = samples[i];
-          window.sequencerUi._sequencer.addTrack(sample);
-      });
-      document.addEventListener('died', function(e){
-          setBpm(130);
-        rainbow('white');
-        // reset music?
-      });
-      function setBpm(num){
-        window.sequencerUi._sequencer.setBpm(num);
-        document.getElementById('bpm').value = num;
-      }
-  </script>
+            }
+            document.addEventListener("newLevel", function(e) {
+                console.log("new level! " + e.detail);
+            });
+            document.addEventListener("ateGhost", function(e) {
+                console.log("ate ghost! " + e.detail);
+                addMoreTracks();
+            });
+            document.addEventListener('died', function(e){
+                setBpm(0);
+                rainbow('white');
+                // reset music?
+                setTimeout(function(){
+                    setBpm(130);
+                }, 8000);
+            });
+            document.addEventListener('startGame', function(e){
+                // start music?
+                var sequencer = window.sequencerUi._sequencer; 
+                window.lastEnabledTrack = -1;
 
-  <script src="sequencer/sequencer.js"></script>
-  <script src="sequencer/pacman_sequencer.js"></script>
-  <script type='text/javascript'>
-      window.sequencerUi = new SequencerUi();
-      window.sequencerUi.init();
- </script>
-</body>
+                addMoreTracks();
+
+                sequencer.randomizeBeats();
+                sequencer.scheduleNextBeat();
+                console.log("game started!");
+            });
+            document.addEventListener('paused', function(e){
+                window.original_bpm = Number(document.getElementById('bpm').value);
+                setBpm(0);
+                console.log("game paused!");
+            });
+            document.addEventListener('resumed', function(e){
+                setBpm(window.original_bpm);
+                window.sequencerUi._sequencer.scheduleNextBeat();
+                console.log("game resumed!");
+            });
+
+            function setBpm(num){
+                window.sequencerUi._sequencer.setBpm(num);
+                document.getElementById('bpm').value = num;
+            }
+
+            function addMoreTracks(){
+                var sequencer = window.sequencerUi._sequencer;
+                var toEnable = window.lastEnabledTrack + 1;
+                sequencer.changeTrackState(toEnable, true);
+                sequencer.changeTrackState(toEnable + 1, true);
+                sequencer.changeTrackState(toEnable + 2, true);
+                window.lastEnabledTrack = toEnable + 3;
+            }
+            function changeColor(){
+                colors = ['#0ffc4b','#fc0fc0','#fc4b0f','#0fc0fc'];
+                var i = getRandomInt(0,3);
+
+                console.log("changing colors",i);
+                rainbow(colors[i]);
+            }
+
+            window.addEventListener('load', function () {
+                window.sequencerUi = new SequencerUi();
+                window.sequencerUi.init(changeColor);
+            });
+
+        </script>
+
+    </body>
 </html>
