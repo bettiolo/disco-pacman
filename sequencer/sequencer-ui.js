@@ -90,7 +90,7 @@ function SequencerUi() {
     'LS-TCD1 Warm Kick 15.wav'
   ];
   allSamples.sort( function() { return 0.5 - Math.random() } ); // randomize
-  var samples = allSamples.slice(1, getRandomInt(5, 10)).map(function (sample) {
+  var samples = allSamples.slice(1, getRandomInt(10, 15)).map(function (sample) {
     return 'samples/' + sample;
   });
 
@@ -130,7 +130,17 @@ SequencerUi.prototype.generateTable = function () {
     var alternateBeatGroup = false;
 
     var infoTd = document.createElement('td');
-    infoTd.innerText = this._sequencer.getTrackTitle(trackIndex);
+    var trackCheckbox = document.createElement('input');
+    trackCheckbox.setAttribute('type', 'checkbox');
+    trackCheckbox.id = 'track-enabled-' + trackIndex;
+    trackCheckbox.checked = true;
+    trackCheckbox.setAttribute('data-track', trackIndex);
+    // trackCheckbox.addEventListener('input', this.changeTrackState());
+    var trackCheckboxLabel = document.createElement('label');
+    trackCheckboxLabel.setAttribute('for', trackCheckbox.id);
+    trackCheckboxLabel.innerHTML = this._sequencer._tracks[trackIndex].title;
+    infoTd.appendChild(trackCheckbox);
+    infoTd.appendChild(trackCheckboxLabel);
     infoTd.classList.add('track-info');
     tr.appendChild(infoTd);
 

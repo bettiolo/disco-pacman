@@ -18,35 +18,51 @@ Sequencer.prototype.init = function (onBeat) {
 };
 
 Sequencer.prototype.getFile = function(url, cb) {
+  var self = this;
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
 
-  request.onload = function() {
-    this._context.decodeAudioData(request.response, function(data) {
-      cb(data, undefined);
-    }, function() {
-      cb(undefined, "Error decoding the file " + url);
-    });
+  request.onload = function () {
+    console.log('Loaded', url);
+    self.onLoadFile(this.response, cb)
   };
   request.send();
 };
 
-Sequencer.prototype.addTrack = function (url) {
-  var track = { beats: [] };
-  for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
-    var audio = new Audio();
-    // audio.crossOrigin = "anonymous";
-    audio.src = url;
-    var source = this._context.createMediaElementSource(audio);
-    source.connect(this._gain);
+Sequencer.prototype.onLoadFile = function(response, cb) {
+  this._context.decodeAudioData(response,
+    cb,
+    function () { throw new Error("Error decoding the file " + url); }
+  );
+};
 
+Sequencer.prototype.addTrack = function (url) {
+  var self = this;
+  var trackIndex = this._tracks.length;
+  var title = decodeURIComponent(url.split('/').slice(-1)[0]);
+  title = title.substr(0, title.length - 4);
+  var track = {
+    title: title,
+    beats: []
+  };
+  for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
     track.beats.push({
-      audio: audio,
-      source: source
+      enabled: false
     });
   }
   this._tracks.push(track);
+  this.getFile(url, function (audioData) {
+    self._tracks[trackIndex].audioData = audioData;
+  });
+};
+
+Sequencer.prototype.scheduleBeat = function (trackIndex, delayInSeconds) {
+  var source = this._context.createBufferSource();
+  source.buffer = this._tracks[trackIndex].audioData;
+  // source.loop = true;
+  source.connect(this._gain);
+  source.start(this._context.currentTime + delayInSeconds);
 };
 
 Sequencer.prototype.getRandomBeats = function () {
@@ -77,12 +93,10 @@ Sequencer.prototype.beat = function () {
   }
   console.log('beat', this._beatIndex);
   this._onBeat(this._beatIndex);
-
   for (var trackIndex = 0; trackIndex < this._samples.length; trackIndex++) {
     var beat = this._tracks[trackIndex].beats[this._beatIndex];
     if (beat.enabled) {
-      beat.audio.play();
-      console.log(this.getTrackTitle(trackIndex));
+      this.scheduleBeat(trackIndex, 0);
     }
   }
   this._beatIndex++;
@@ -96,8 +110,4 @@ Sequencer.prototype.setBpm = function (bpm) {
     clearInterval(this._interval);
     this._interval = setInterval(this.beat.bind(this), this._intervalMs);
   }
-};
-
-Sequencer.prototype.getTrackTitle = function(trackIndex) {
-  return decodeURIComponent(this._tracks[trackIndex].beats[0].audio.src.split('/').slice(-1)[0]);
 };
