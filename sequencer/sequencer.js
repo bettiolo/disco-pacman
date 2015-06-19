@@ -83,15 +83,13 @@ Sequencer.prototype.beat = function () {
     this._beatIndex = 0;
     this.randomizeBeats();
   }
-  //console.log('beat', this._beatIndex);
   this._onBeat(this._beatIndex);
   for (var trackIndex = 0; trackIndex < this._samples.length; trackIndex++) {
     var beat = this._tracks[trackIndex].beats[this._beatIndex];
-    if (beat.enabled) {
+    if (beat.enabled && this._tracks[trackIndex].audioData) {
       var delayInSeconds = 0;
       var source = this._context.createBufferSource();
       source.buffer = this._tracks[trackIndex].audioData;
-      // source.loop = true;
       source.connect(this._gain);
       source.start(this._context.currentTime + delayInSeconds);
     }
