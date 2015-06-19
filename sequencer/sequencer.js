@@ -101,6 +101,11 @@ Sequencer.prototype.beat = function () {
 };
 
 Sequencer.prototype.scheduleNextBeat = function() {
+  if (this._intervalMs === 0) {
+    console.log('bpm stop');
+    clearInterval(this._interval);
+    return;
+  }
   if (!this._intervalMs || this._intervalMs != this._nextIntervalMs) {
     console.log('bpm change:', this._bpm);
     this._intervalMs = this._nextIntervalMs;
@@ -110,6 +115,12 @@ Sequencer.prototype.scheduleNextBeat = function() {
 };
 
 Sequencer.prototype.setBpm = function (bpm) {
+  if (bpm == 0) {
+    this._nextIntervalMs = 0;
+    this._bpm = bpm;
+    return;
+  }
+
   if (bpm < 80) {
     bpm = 80;
   }
