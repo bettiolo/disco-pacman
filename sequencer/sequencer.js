@@ -14,7 +14,6 @@ Sequencer.prototype.init = function (onBeat) {
   for (var sampleIndex = 0; sampleIndex < this._samples.length; sampleIndex++) {
     this.addTrack(this._samples[sampleIndex]);
   }
-  this.randomizeBeats();
 };
 
 Sequencer.prototype.getFile = function(url, cb) {
@@ -67,9 +66,8 @@ Sequencer.prototype.getRandomBeats = function () {
 };
 
 Sequencer.prototype.setBeatsEnabled = function(trackIndex, beatsEnabled) {
-  var track = this._tracks[trackIndex];
   for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
-    track.beats[beatIndex].enabled = beatsEnabled[beatIndex];
+    this.changeBeatState(trackIndex, beatIndex, beatsEnabled[beatIndex]);
   }
 };
 
@@ -82,7 +80,6 @@ Sequencer.prototype.randomizeBeats = function () {
 Sequencer.prototype.beat = function () {
   if (this._beatIndex == beatCount) {
     this._beatIndex = 0;
-    this.randomizeBeats();
   }
   this._onBeat(this._beatIndex);
   for (var trackIndex = 0; trackIndex < this._samples.length; trackIndex++) {
@@ -131,4 +128,8 @@ Sequencer.prototype.setBpm = function (bpm) {
 
 Sequencer.prototype.changeTrackState = function(trackIndex, enabled) {
   this._tracks[trackIndex].enabled = enabled;
+};
+
+Sequencer.prototype.changeBeatState = function(trackIndex, beatIndex, enabled) {
+  this._tracks[trackIndex].beats[beatIndex].enabled = enabled;
 };

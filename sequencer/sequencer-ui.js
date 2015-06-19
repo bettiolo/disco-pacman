@@ -99,6 +99,12 @@ function SequencerUi() {
   this._bpmInput.addEventListener('input', function () {
     this._sequencer.setBpm(this._bpmInput.value);
   }.bind(this));
+  this._randomizeButton = document.getElementById('randomize');
+  this._randomizeButton.addEventListener('click', function () {
+    this._sequencer.randomizeBeats();
+    this.generateTable();
+  }.bind(this));
+
 }
 
 function getRandomInt(min, max) {
