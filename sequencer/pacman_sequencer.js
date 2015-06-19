@@ -93,7 +93,7 @@ function SequencerUi() {
   ];
   allSamples.sort( function() { return 0.5 - Math.random() } ); // randomize
   var samples = allSamples.slice(1, 15).map(function (sample) {
-    return '/sequencer/samples/' + sample;
+    return 'sequencer/samples/' + sample;
   });
 
   this._sequencer = new Sequencer(samples);
