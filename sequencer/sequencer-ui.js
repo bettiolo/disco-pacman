@@ -117,7 +117,8 @@ SequencerUi.prototype.generateTable = function () {
   var sequencerTable = document.getElementById('sequencerTable');
   sequencerTable.innerHTML = '';
   var alternateTrack = true;
-  for (var trackIndex = 0; trackIndex < this._sequencer._samples.length; trackIndex++) {
+  for (var trackIndex = 0; trackIndex < this._sequencer._tracks.length; trackIndex++) {
+    var track = this._sequencer._tracks[trackIndex];
     var tr = document.createElement('tr');
     tr.classList.add('track-' + trackIndex);
     if (alternateTrack) {
@@ -133,19 +134,22 @@ SequencerUi.prototype.generateTable = function () {
     var trackCheckbox = document.createElement('input');
     trackCheckbox.setAttribute('type', 'checkbox');
     trackCheckbox.id = 'track-enabled-' + trackIndex;
-    trackCheckbox.checked = true;
+    trackCheckbox.checked = track.enabled;
     trackCheckbox.setAttribute('data-track', trackIndex);
-    // trackCheckbox.addEventListener('input', this.changeTrackState());
+    trackCheckbox.addEventListener('change', function (e) {
+      console.log(e.target.getAttribute('data-track'), e.target.checked);
+      this._sequencer.changeTrackState(e.target.getAttribute('data-track'), e.target.checked);
+    }.bind(this), false);
     var trackCheckboxLabel = document.createElement('label');
     trackCheckboxLabel.setAttribute('for', trackCheckbox.id);
-    trackCheckboxLabel.innerHTML = this._sequencer._tracks[trackIndex].title;
+    trackCheckboxLabel.innerHTML = track.title;
     infoTd.appendChild(trackCheckbox);
     infoTd.appendChild(trackCheckboxLabel);
     infoTd.classList.add('track-info');
     tr.appendChild(infoTd);
 
     for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
-      var beat = this._sequencer._tracks[trackIndex].beats[beatIndex];
+      var beat = track.beats[beatIndex];
 
       var td = document.createElement('td');
       if (beat.enabled) {

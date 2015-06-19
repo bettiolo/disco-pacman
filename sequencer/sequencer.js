@@ -44,7 +44,8 @@ Sequencer.prototype.addTrack = function (url) {
   title = title.substr(0, title.length - 4);
   var track = {
     title: title,
-    beats: []
+    beats: [],
+    enabled: true
   };
   for (var beatIndex = 0; beatIndex < beatCount; beatIndex++) {
     track.beats.push({
@@ -85,8 +86,10 @@ Sequencer.prototype.beat = function () {
   }
   this._onBeat(this._beatIndex);
   for (var trackIndex = 0; trackIndex < this._samples.length; trackIndex++) {
-    var beat = this._tracks[trackIndex].beats[this._beatIndex];
-    if (beat.enabled && this._tracks[trackIndex].audioData) {
+    var track = this._tracks[trackIndex];
+    var beat = track.beats[this._beatIndex];
+    var hasAudioData = this._tracks[trackIndex].audioData;
+    if (hasAudioData && track.enabled && beat.enabled) {
       var delayInSeconds = 0;
       var source = this._context.createBufferSource();
       source.buffer = this._tracks[trackIndex].audioData;
@@ -124,4 +127,8 @@ Sequencer.prototype.setBpm = function (bpm) {
   }
   this._bpm = bpm;
   this._nextIntervalMs = (60 * 1000) / bpm;
+};
+
+Sequencer.prototype.changeTrackState = function(trackIndex, enabled) {
+  this._tracks[trackIndex].enabled = enabled;
 };
