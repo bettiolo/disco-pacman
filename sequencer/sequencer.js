@@ -15,7 +15,6 @@ Sequencer.prototype.init = function (onBeat) {
     this.addTrack(this._samples[sampleIndex]);
   }
   this.randomizeBeats();
-  this.scheduleNextBeat();
 };
 
 Sequencer.prototype.getFile = function(url, cb) {

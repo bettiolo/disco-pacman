@@ -110,6 +110,7 @@ SequencerUi.prototype.init = function () {
   this._bpmInput.value = defaultBpm;
   this._sequencer.setBpm(defaultBpm);
   this._sequencer.init(this.onBeat.bind(this));
+  this._sequencer.scheduleNextBeat();
 };
 
 SequencerUi.prototype.generateTable = function () {
